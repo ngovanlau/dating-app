@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import { Member } from '../../_models/member';
 import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { FileUploader, FileUploadModule } from 'ng2-file-upload';
@@ -18,6 +18,7 @@ export class PhotoEditorComponent implements OnInit {
   uploader?: FileUploader;
   hasBaseDropzoneOver = false;
   baseUrl = environment.apiUrl;
+  memberChange = output<Member>();
 
   ngOnInit(): void {
     throw new Error('Method not implemented.');
@@ -31,6 +32,22 @@ export class PhotoEditorComponent implements OnInit {
     this.uploader = new FileUploader({
       url: this.baseUrl + 'users/add-photo',
       authToken: 'Bear ' + this.accountService.currentUser()?.token,
+      isHTML5: true,
+      allowedFileType: ['image'],
+      removeAfterUpload: true,
+      autoUpload: false,
+      maxFileSize: 10 * 1024 * 1024,
     });
+
+    this.uploader.onAfterAddingFile = (file) => {
+      file.withCredentials = false;
+    };
+
+    this.uploader.onSuccessItem = (item, response, status, headers) => {
+      const photo = JSON.parse(response);
+      const updateMember = { ...this.member() };
+      updateMember.photos.push(photo);
+      this.memberChange.emit(updateMember);
+    };
   }
 }

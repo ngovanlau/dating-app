@@ -1,6 +1,6 @@
 import { Component, inject, input, OnInit, output } from '@angular/core';
 import { Member } from '../../_models/member';
-import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { FileUploader, FileUploadModule } from 'ng2-file-upload';
 import { AccountService } from '../../_services/account.service';
 import { environment } from '../../../environments/environment';
@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-photo-editor',
   standalone: true,
-  imports: [NgIf, NgFor, NgStyle, NgClass, FileUploadModule],
+  imports: [NgIf, NgFor, NgStyle, NgClass, FileUploadModule, DecimalPipe],
   templateUrl: './photo-editor.component.html',
   styleUrl: './photo-editor.component.css',
 })
@@ -16,16 +16,16 @@ export class PhotoEditorComponent implements OnInit {
   private accountService = inject(AccountService);
   member = input.required<Member>();
   uploader?: FileUploader;
-  hasBaseDropzoneOver = false;
+  hasBaseDropZoneOver = false;
   baseUrl = environment.apiUrl;
   memberChange = output<Member>();
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    this.initializeUploader();
   }
 
   fileOverBase(e: any) {
-    this.hasBaseDropzoneOver = e;
+    this.hasBaseDropZoneOver = e;
   }
 
   initializeUploader() {
